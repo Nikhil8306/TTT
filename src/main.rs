@@ -1,47 +1,47 @@
 #![allow(unused)]
 #![allow(non_snake_case)]
 
-mod constants;
 mod game;
-
+mod constants;
+mod engine;
+mod display;
 
 use std::io::{stdin, stdout, Read, Write};
-use game::{Turn};
+use game::{Mode, Game};
 
+use constants::START_MESSAGE;
 fn main() {
-    println!("Welcome to Tic Tac Toe");
-    println!("Choose your game mode : ");
-
-    let choices = constants::GAMECHOICE;
-
-    for (ind, choice) in choices.iter().enumerate() {
-        println!("{}.  {}", ind+1, choice);
-    }
-
-    print!(">>> ");
+    println!("{}",START_MESSAGE);
     stdout().flush();
 
-    let mut choice : [u8; 1] = [0];
+    let mut choice : [u8; 10] = [0; 10];
     stdin().read(&mut choice);
 
+    choice[0] -= 48;
 
-    let players = match choice[0] {
-        1 => {  
-            Ok([Turn::Offline, Turn::Offline])
+    let opp = match choice[0] {
+        1 => {
+            Ok(Mode::Offline)
         },
         2 => {
-            Ok([Turn::Offline, Turn::Online])
+            Ok(Mode::Online)
         },
         3 => {
-            Ok([Turn::Offline, Turn::AI])
+            Ok(Mode::AI)
         },
         _ => {
-            Err("Choose from the provided options")
+            Err("Choose a valid option")
         }
     };
 
-    
+    if (opp.is_err()) {
+        println!("Try Again !!");
+    }
+    let opp = opp.unwrap();
 
+    
+    let game = Game::new(opp);
+    game.start();
 
 
 }
